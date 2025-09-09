@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using System.Drawing; // necessário para usar Image
 
 namespace SimplePongGame
 {
@@ -9,6 +10,8 @@ namespace SimplePongGame
         int bally = 5;
         int score = 0;
         int cpuPoint = 0;
+        int tempoSegundos = 0;
+        int tempoMinutos = 0;
 
         bool goup;
         bool godown;
@@ -23,11 +26,15 @@ namespace SimplePongGame
         public Form1()
         {
             InitializeComponent();
-            ball.Image = Image.FromFile("C:\\DevC\\SimplePongGame\\Imagens\\ballsprite_large.png"); // ou "Images/ballSprite.png" se estiver numa subpasta
+
+            // Define sprite da bola
+            ball.Image = Image.FromFile("C:\\DevC\\SimplePongGame\\Imagens\\ballsprite_large.png");
             ball.SizeMode = PictureBoxSizeMode.StretchImage;
+
             this.KeyDown += new KeyEventHandler(KeyIsDown);
             this.KeyUp += new KeyEventHandler(KeyIsUp);
-            gameTimer.Start(); // Certifique-se de iniciar o Timer
+
+            gameTimer.Start(); // inicia o Timer
         }
 
         private void KeyIsDown(object sender, KeyEventArgs e)
@@ -48,10 +55,21 @@ namespace SimplePongGame
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+            // Tempo de jogo
+            tempoSegundos++;
+            if (tempoSegundos >= 3600) // passou 1 minuto
+            {
+                tempoMinutos++;
+                tempoSegundos = 0;
+            }
+
+            labelTempo.Text = $"{tempoMinutos:D2}:{(tempoSegundos / 60):D2}";
+
+            // Placar
             playerScore.Text = score.ToString();
             cpuLabel.Text = cpuPoint.ToString();
 
-            // ?? Controle da pausa da bola
+            // Controle da pausa da bola
             if (ballPaused)
             {
                 pauseCounter++;
@@ -62,21 +80,21 @@ namespace SimplePongGame
                 }
             }
 
-            // ? Movimento da bola (se não estiver pausada)
+            // Movimento da bola (se não estiver pausada)
             if (!ballPaused)
             {
                 ball.Top -= bally;
                 ball.Left -= ballx;
             }
 
-            // ? Movimento do jogador
+            // Movimento do jogador
             if (goup && player.Top > 0)
                 player.Top -= 8;
 
             if (godown && player.Top + player.Height < ClientSize.Height)
                 player.Top += 8;
 
-            // ? Movimento da CPU com atraso e erro (não é perfeita)
+            // Movimento da CPU com atraso
             int cpuCenter = cpu.Top + cpu.Height / 2;
             int ballCenter = ball.Top + ball.Height / 2;
 
@@ -88,16 +106,16 @@ namespace SimplePongGame
                     cpu.Top -= 5;
             }
 
-            // ? Colisão com topo ou base
+            // Colisão com topo ou base
             if (ball.Top < 0 || ball.Top + ball.Height > ClientSize.Height)
                 bally = -bally;
 
-            // ? Colisão com jogador ou CPU (se não estiver pausada)
+            // Colisão com jogador ou CPU (se não estiver pausada)
             if (!ballPaused && (ball.Bounds.IntersectsWith(player.Bounds) || ball.Bounds.IntersectsWith(cpu.Bounds)))
             {
                 ballx = -ballx;
 
-                // ? Aumenta a velocidade da bola a cada colisão (com limite)
+                // Aumenta a velocidade da bola a cada colisão (com limite)
                 if (ballx < 0 && Math.Abs(ballx) < 12)
                     ballx -= 1;
                 else if (ballx > 0 && Math.Abs(ballx) < 12)
@@ -109,21 +127,23 @@ namespace SimplePongGame
                     bally += 1;
             }
 
-            // ? Gol da CPU
+            // Gol da CPU
             if (ball.Left < 0)
             {
                 cpuPoint++;
+                tempoSegundos = 0;
                 ResetBall(toRight: true);
             }
 
-            // ? Gol do jogador
+            // Gol do jogador
             if (ball.Left + ball.Width > ClientSize.Width)
             {
                 score++;
+                tempoSegundos = 0;
                 ResetBall(toRight: false);
             }
 
-            // ? Fim de jogo
+            // Fim de jogo
             if (score >= 10)
             {
                 gameTimer.Stop();
@@ -154,5 +174,7 @@ namespace SimplePongGame
             ballPaused = true;
             pauseCounter = 0;
         }
+
+     
     }
 }

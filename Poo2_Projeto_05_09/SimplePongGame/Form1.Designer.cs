@@ -35,6 +35,7 @@
             cpu = new PictureBox();
             playerScore = new Label();
             cpuLabel = new Label();
+            labelTempo = new Label();
             ((System.ComponentModel.ISupportInitialize)player).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ball).BeginInit();
             ((System.ComponentModel.ISupportInitialize)cpu).BeginInit();
@@ -95,12 +96,23 @@
             cpuLabel.TabIndex = 4;
             cpuLabel.Text = "00";
             // 
+            // labelTempo
+            // 
+            labelTempo.AutoSize = true;
+            labelTempo.Location = new Point(423, 27);
+            labelTempo.Name = "labelTempo";
+            labelTempo.Size = new Size(38, 15);
+            labelTempo.TabIndex = 5;
+            labelTempo.Text = "label1";
+            
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveCaption;
             ClientSize = new Size(928, 574);
+            Controls.Add(labelTempo);
             Controls.Add(cpuLabel);
             Controls.Add(playerScore);
             Controls.Add(cpu);
@@ -125,5 +137,6 @@
         private PictureBox cpu;
         private Label playerScore;
         private Label cpuLabel;
+        private Label labelTempo;
     }
 }
